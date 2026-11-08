@@ -276,7 +276,7 @@ var DAN=['nedelja','ponedeljek','torek','sreda','četrtek','petek','sobota'];
 var DUR=[60,90,120,180,240];
 var UNITS=[{id:'mladina',label:'Mladina'},{id:'operativa',label:'Operativa'},{id:'veterani',label:'Veterani'},{id:'clanice',label:'Upravni odbor'}];
 var ALLU={id:'vse',label:'Celo društvo'};
-var UTYPES={mladina:['vaja','tekma','akcija'],operativa:['vaja','interv','akcija','izobr'],veterani:['vaja','tekma'],clanice:['sest','akcija','pogreb']};
+var UTYPES={mladina:['vaja','tekma','akcija'],operativa:['vaja','interv','izobr','akcija','sest'],veterani:['vaja','tekma'],clanice:['sest']};
 var YG=[{id:'pionirji',label:'Pionirji in pionirke',short:'Pionirji'},{id:'mladinci',label:'Mladinci in mladinke',short:'Mladinci'}];
 var SCOPES=[{id:'mladina',label:'Mladina'},{id:'operativa',label:'Operativa'},{id:'ostalo',label:'Ostalo'}];
 function typesFor(u){return u==='vse'||!UTYPES[u]?TYPES.map(function(t){return t.id}):UTYPES[u]}
