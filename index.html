@@ -163,6 +163,15 @@ textarea.field{min-height:80px;resize:vertical}
 .trainee{font-size:11px;font-weight:700;color:var(--red);background:var(--red-l);padding:1px 7px;border-radius:10px;vertical-align:middle}
 .drv{color:var(--mute);flex-shrink:0}
 .drv svg{width:20px;height:20px}
+.ac{position:relative}
+.ac-list{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:8;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.12);max-height:300px;overflow-y:auto}
+.ac-list.on{display:block}
+.ac-item{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:11px 14px}
+.ac-item+.ac-item{border-top:1px solid var(--line)}
+.ac-item:active{background:var(--bg)}
+.ac-ic{color:var(--red);width:16px;flex-shrink:0;text-align:center;margin-top:1px}
+.ac-item b{display:block;font-weight:600;font-size:15px}
+.ac-item small{display:block;color:var(--mute);font-size:13px}
 </style>
 </head>
 <body>
@@ -387,7 +396,11 @@ function sheetView(){
   if(t.f.indexOf('time')>=0)h+='<div class="addrow" style="margin-top:0"><input type="date" class="field" id="fDate" value="'+d.date+'"><input type="time" class="field" id="fTime" value="'+esc(d.time)+'" style="max-width:130px"></div>';
   else h+='<input type="date" class="field" id="fDate" value="'+d.date+'">';
   h+='<div class="lbl">'+esc(t.title)+'</div>'+(t.kind?chipGroup(t.kind,d.title,t.add):'<input class="field" id="fTitle" placeholder="Ime in priimek" value="'+esc(d.title)+'" autocomplete="off">');
-  if(t.f.indexOf('location')>=0)h+='<div class="lbl">'+esc(t.locLabel||'Lokacija')+'</div>'+chipGroup('location',d.location,t.locLabel?'Novo pokopališče':'Nova lokacija');
+  if(t.f.indexOf('location')>=0){
+    var recent=tagsOf('location').slice().reverse().slice(0,8);
+    h+='<div class="lbl">'+esc(t.locLabel||'Lokacija')+'</div><div class="ac"><input class="field" id="locIn" value="'+esc(d.location)+'" placeholder="'+(t.locLabel?'Začni pisati, npr. Pokopališče Begunje':'Začni pisati naslov ali kraj …')+'" autocomplete="off" autocorrect="off" spellcheck="false"><div class="ac-list" id="acList"></div></div>';
+    if(recent.length)h+='<div class="chips" style="margin-top:8px">'+recent.map(function(x){return'<button class="chip'+(d.location===x.value?' on':'')+'" data-loc="'+esc(x.value)+'">'+esc(x.value)+'</button>'}).join('')+'</div>';
+  }
   if(t.f.indexOf('place')>=0)h+='<div class="lbl">Uvrstitev</div><input class="field" id="fPlace" placeholder="npr. 1. mesto" value="'+esc(d.place)+'" autocomplete="off">';
   if(t.f.indexOf('duration')>=0){
     h+='<div class="lbl">Trajanje</div><div class="chips">';
@@ -609,6 +622,7 @@ function readFields(){
   if(g('fTime')!==null)d.time=g('fTime');
   if(g('fPlace')!==null)d.place=g('fPlace').trim();
   if(g('fTitle')!==null)d.title=g('fTitle').trim();
+  if(g('locIn')!==null)d.location=g('locIn').trim();
   if(g('rVodja')!==null)d.vodja=g('rVodja');
   if(g('rIzp')!==null)d.izpolnil=g('rIzp');
   document.querySelectorAll('[data-drv]').forEach(function(el){if(el.value)d.drivers[el.dataset.drv]=el.value;else delete d.drivers[el.dataset.drv]});
@@ -620,6 +634,7 @@ function saveEvent(){
   readFields();var d=ui.sheet.d;
   if(ui.sheet.adding){var v=(document.getElementById('chipIn')||{}).value;if(v&&v.trim())addChip(v.trim())}
   if(!d.date){toast('Izberi datum');return}
+  if(d.location)d.location=addTag('location',d.location);
   var o={id:d.id,unit:d.unit,type:d.type,date:d.date,title:d.title,location:d.location,time:d.time,duration:d.duration,place:d.place,mentors:d.unit==='mladina'?d.mentors:[],present:d.present,note:d.note,vodja:d.vodja,izpolnil:d.izpolnil,drivers:d.drivers,others:d.others};
   var i=raw.events.findIndex(function(e){return e.id===d.id});
   if(i>=0)raw.events[i]=o;else raw.events.push(o);
@@ -633,6 +648,38 @@ function addChip(v){
   else d.title=addTag(k,v);
   s.adding=null;
 }
+/* ---------- iskanje lokacij ---------- */
+var acT=null,acSeq=0;
+function norm(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function acItems(list){
+  var el=document.getElementById('acList');if(!el)return;
+  if(!list.length){el.classList.remove('on');el.innerHTML='';return}
+  el.innerHTML=list.map(function(x){return'<button type="button" class="ac-item" data-acv="'+esc(x.v)+'"><span class="ac-ic">'+(x.saved?'★':'⌖')+'</span><span><b>'+esc(x.main)+'</b>'+(x.sub?'<small>'+esc(x.sub)+'</small>':'')+'</span></button>'}).join('');
+  el.classList.add('on');
+}
+function acSearch(q){
+  var nq=norm(q.trim()),seq=++acSeq;
+  if(!nq){acItems([]);return}
+  var local=tagsOf('location').filter(function(t){return norm(t.value).indexOf(nq)>=0}).slice(0,5).map(function(t){return{v:t.value,main:t.value,saved:1}});
+  acItems(local);
+  clearTimeout(acT);
+  if(nq.length<3)return;
+  acT=setTimeout(function(){
+    fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q.trim())+'&limit=6&lat=46.374&lon=14.198&bbox=13.3,45.4,16.7,46.9')
+    .then(function(r){return r.json()}).then(function(j){
+      if(seq!==acSeq)return;
+      var seen={};local.forEach(function(x){seen[norm(x.v)]=1});
+      var geo=(j.features||[]).map(function(f){var p=f.properties||{};
+        var street=[p.street,p.housenumber].filter(Boolean).join(' ');
+        var main=p.name||street||p.city||'';
+        var place=p.city||p.town||p.village||p.district||'';
+        var sub=[main===street?'':street,[p.postcode,place].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+        var v=[main,main===street?'':street,place&&place!==main?place:''].filter(Boolean).join(', ');
+        return{v:v,main:main,sub:sub}}).filter(function(x){if(!x.v||seen[norm(x.v)])return false;seen[norm(x.v)]=1;return true});
+      acItems(local.concat(geo));
+    }).catch(function(){});
+  },280);
+}
 function filterPeople(q){q=(q||'').toLowerCase();document.querySelectorAll('.person').forEach(function(p){p.style.display=p.dataset.n.indexOf(q)>=0?'':'none'})}
 function updCount(){
   var ps=document.querySelectorAll('.person'),on=document.querySelectorAll('.person.on').length;
@@ -642,7 +689,7 @@ function updCount(){
 
 /* ---------- dogodki DOM ---------- */
 document.addEventListener('click',function(e){
-  var t=e.target.closest('[data-a],[data-tab],[data-unit],[data-filter],[data-edit],[data-pick],[data-addchip],[data-dur],[data-mentor],[data-p],[data-month],[data-period],[data-dl],[data-lt],[data-mem],[data-munit],[data-mflag],[data-mren],[data-mdel],[data-tren],[data-tdel],[data-newtype],[data-punit],[data-eunit]');
+  var t=e.target.closest('[data-a],[data-tab],[data-unit],[data-filter],[data-edit],[data-pick],[data-addchip],[data-dur],[data-loc],[data-mentor],[data-p],[data-month],[data-period],[data-dl],[data-lt],[data-mem],[data-munit],[data-mflag],[data-mren],[data-mdel],[data-tren],[data-tdel],[data-newtype],[data-punit],[data-eunit]');
   if(!t)return;var ds=t.dataset,s=ui.sheet;
   if(ds.a==='mclose'&&e.target!==t&&t.classList.contains('modal'))return;
   if(s&&ds.a!=='cancel'&&!ds.p)readFields();
@@ -655,6 +702,7 @@ document.addEventListener('click',function(e){
   if(ds.eunit){s.d.unit=ds.eunit;render();return}
   if(ds.pick){var tg=tagsOf(ds.pick)[+ds.i];if(!tg)return;var key=ds.pick==='location'?'location':'title';s.d[key]=s.d[key]===tg.value?'':tg.value;render();return}
   if(ds.addchip){s.adding=s.adding===ds.addchip?null:ds.addchip;render();var ci=document.getElementById('chipIn');if(ci)ci.focus();return}
+  if(ds.loc!==undefined){s.d.location=s.d.location===ds.loc?'':ds.loc;render();return}
   if(ds.dur){s.d.duration=+ds.dur;s.customDur=false;render();return}
   if(ds.mentor){var a=s.d.mentors,ix=a.indexOf(ds.mentor);if(ix>=0)a.splice(ix,1);else a.push(ds.mentor);render();return}
   if(ds.p){var pr=s.d.present,j=pr.indexOf(ds.p);if(j>=0)pr.splice(j,1);else pr.push(ds.p);t.classList.toggle('on');updCount();return}
@@ -709,7 +757,13 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target.id==='quickMem'){e.preventDefault();document.querySelector('[data-a="quickMem"]').click()}
   if(e.key==='Escape'){if(ui.modal){ui.modal=null;render()}else if(ui.sheet){ui.sheet=null;render()}}
 });
-document.addEventListener('input',function(e){if(e.target.id==='search')filterPeople(e.target.value)});
+document.addEventListener('input',function(e){
+  if(e.target.id==='search')filterPeople(e.target.value);
+  if(e.target.id==='locIn'){if(ui.sheet&&ui.sheet.d)ui.sheet.d.location=e.target.value;acSearch(e.target.value)}
+});
+document.addEventListener('focusout',function(e){if(e.target.id==='locIn')setTimeout(function(){acItems([])},200)});
+document.addEventListener('pointerdown',function(e){var b=e.target.closest('[data-acv]');if(!b)return;e.preventDefault();
+  var v=b.dataset.acv,inp=document.getElementById('locIn');if(inp)inp.value=v;if(ui.sheet&&ui.sheet.d)ui.sheet.d.location=v;acItems([]);if(inp)inp.blur()});
 
 render();
 startSync();
