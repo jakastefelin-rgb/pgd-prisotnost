@@ -12,6 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PGD Prisotnost">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('pgd-begunje-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))}catch(e){}</script>
 <style>
 :root{--red:#a8261f;--red-d:#7e1a15;--red-l:#f8ebe9;--gold:#f2b705;--bg:#f4f4f6;--card:#fff;--ink:#16161a;--mute:#6e6e78;--line:#e7e7ec;--ok:#1f9d55;--ok-l:#e7f6ee;--gold-t:#b98a00;--silver:#8a8f98;--bronze:#a0612a;--r:16px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -214,6 +215,50 @@ textarea.field{min-height:80px;resize:vertical}
 .rbtn .who{flex:0 1 auto;max-width:62%}
 .rbtn .av{flex:none}
 .role.rbtn{padding-top:10px;padding-bottom:10px;min-height:54px}
+.subs{display:flex;gap:6px;overflow-x:auto;margin:8px -18px 0;padding:0 18px 2px;scrollbar-width:none}
+.subs::-webkit-scrollbar{display:none}
+.sub{flex-shrink:0;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:600;color:var(--mute);border:1px solid var(--line);background:var(--card);white-space:nowrap}
+.sub.on{color:var(--red);border-color:var(--red);background:var(--red-l)}
+.themebtn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mute);background:var(--card);border:1px solid var(--line);margin-left:8px;flex-shrink:0}
+.themebtn svg{width:18px;height:18px}
+.save{margin-left:auto}
+small.used{font-size:12px;color:var(--mute);font-weight:500;margin-left:6px}
+.seg button{white-space:nowrap}
+
+/* ---------- temni način ---------- */
+html[data-theme=dark]{color-scheme:dark;--red:#e5484d;--red-d:#b4232a;--red-l:rgba(229,72,77,.16);--bg:#0e0e11;--card:#1a1a1f;--ink:#f1f1f4;--mute:#9b9ba7;--line:#2b2b33;--ok:#3dd68c;--ok-l:rgba(61,214,140,.14);--gold-t:#e8bd45}
+html[data-theme=dark] body{background:var(--bg)}
+html[data-theme=dark] .top{background:rgba(14,14,17,.86)}
+html[data-theme=dark] nav.tabs{background:rgba(24,24,29,.92);border-top-color:var(--line)}
+html[data-theme=dark] nav.tabs button{color:#6f6f7b}
+html[data-theme=dark] nav.tabs button.on{color:var(--red)}
+html[data-theme=dark] .unit{background:#24242b;color:var(--ink)}
+html[data-theme=dark] .unit.on{background:var(--red);color:#fff}
+html[data-theme=dark] .seg{background:#22222a}
+html[data-theme=dark] .seg button.on{background:#34343d;color:var(--ink);box-shadow:none}
+html[data-theme=dark] .card,html[data-theme=dark] .tile{box-shadow:0 0 0 1px var(--line)}
+html[data-theme=dark] .ck{border-color:#4a4a55}
+html[data-theme=dark] .chip.add{border-color:rgba(229,72,77,.45)}
+html[data-theme=dark] .place{background:#2a2a31;color:var(--ink)}
+html[data-theme=dark] .place.p1{background:rgba(232,189,69,.16);color:#e8bd45}
+html[data-theme=dark] .place.p2{background:rgba(180,186,196,.14);color:#c2c7cf}
+html[data-theme=dark] .place.p3{background:rgba(205,127,50,.16);color:#e09a5a}
+html[data-theme=dark] .ac-list,html[data-theme=dark] .role .sel{background-color:var(--card)}
+html[data-theme=dark] .ac-list{box-shadow:0 12px 34px rgba(0,0,0,.5)}
+html[data-theme=dark] .chev{color:#55555f}
+html[data-theme=dark] .banner{background:#2d2410;color:#f3cf7a}
+html[data-theme=dark] .toast{background:#f1f1f4;color:#111}
+html[data-theme=dark] .pinwrap{background:linear-gradient(180deg,#17171c 0%,var(--bg) 100%)}
+html[data-theme=dark] .modal{background:rgba(0,0,0,.6)}
+html[data-theme=dark] .modal .box{box-shadow:0 -1px 0 var(--line)}
+html[data-theme=dark] .fab{box-shadow:0 6px 22px rgba(229,72,77,.35)}
+html[data-theme=dark] .sh-top{background:var(--card);border-bottom-color:var(--line)}
+html[data-theme=dark] .field::placeholder{color:#6c6c78}
+html[data-theme=dark] .logo,html[data-theme=dark] .pinlogo{filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
+html[data-theme=dark] .date{filter:brightness(1.35)}
+html[data-theme=dark] .bar{background:#2b2b33}
+html[data-theme=dark] .person.on .nm{color:var(--ink)}
+html[data-theme=dark] .type{background:var(--card)}
 </style>
 </head>
 <body>
@@ -229,8 +274,14 @@ var MES=['januar','februar','marec','april','maj','junij','julij','avgust','sept
 var MES3=['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
 var DAN=['nedelja','ponedeljek','torek','sreda','četrtek','petek','sobota'];
 var DUR=[60,90,120,180,240];
-var UNITS=[{id:'mladina',label:'Mladina'},{id:'operativa',label:'Operativa'},{id:'veterani',label:'Veterani'},{id:'clanice',label:'Članice in uprava'}];
+var UNITS=[{id:'mladina',label:'Mladina'},{id:'operativa',label:'Operativa'},{id:'veterani',label:'Veterani'},{id:'clanice',label:'Upravni odbor'}];
 var ALLU={id:'vse',label:'Celo društvo'};
+var UTYPES={mladina:['vaja','tekma','akcija'],operativa:['vaja','interv','akcija','izobr'],veterani:['vaja','tekma'],clanice:['sest','akcija','pogreb']};
+var YG=[{id:'pionirji',label:'Pionirji in pionirke',short:'Pionirji'},{id:'mladinci',label:'Mladinci in mladinke',short:'Mladinci'}];
+var SCOPES=[{id:'mladina',label:'Mladina'},{id:'operativa',label:'Operativa'},{id:'ostalo',label:'Ostalo'}];
+function typesFor(u){return u==='vse'||!UTYPES[u]?TYPES.map(function(t){return t.id}):UTYPES[u]}
+function scopeOf(u){return u==='mladina'||u==='operativa'?u:'ostalo'}
+function YGl(id){var g=YG.find(function(x){return x.id===id});return g?g.label:''}
 var TYPES=[
  {id:'vaja',label:'Vaja',plural:'Vaje',color:'#a8261f',title:'Tema vaje',kind:'topic',f:['duration','leaders'],add:'Nova tema'},
  {id:'tekma',label:'Tekmovanje',plural:'Tekmovanja',color:'#c99a06',title:'Tekmovanje',kind:'name',f:['location','place','leaders'],add:'Novo tekmovanje'},
@@ -251,6 +302,9 @@ var I={
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
   truck:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h11v10H2zM13 9h4l3 4v3h-7"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>',
+  tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>',
   trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
   down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>'
@@ -262,25 +316,34 @@ function U(id){return UNITS.concat([ALLU]).find(function(u){return u.id===id})||
 var raw={members:[],mentors:[],tags:[],events:[]};
 var state={members:[],mentors:[],events:[]};
 var local=load()||{};
-var ui={tab:local.tab||'dogodki',unit:local.unit||'mladina',filter:'vse',period:'mesec',month:today().slice(0,7),sheet:null,modal:null,listTab:'members',showAll:false};
+var ui={tab:local.tab||'dogodki',unit:local.unit||'mladina',youth:local.youth||'vse',temeScope:null,filter:'vse',period:'mesec',month:today().slice(0,7),sheet:null,modal:null,listTab:'members',showAll:false};
 var pin=null,needPin=false,pinErr='',rev=-1,offline=false,pending=0,saveMsg='Nalagam…',pollT=null;
 try{pin=localStorage.getItem(PINKEY)}catch(e){}
 (function(){var c=null;try{c=JSON.parse(localStorage.getItem(CACHE))}catch(e){}if(c&&c.members&&pin){raw=c;rebuild()}})();
 
 function load(){try{return JSON.parse(localStorage.getItem(LS))}catch(e){return null}}
-function persistLocal(){try{localStorage.setItem(LS,JSON.stringify({tab:ui.tab,unit:ui.unit}))}catch(e){}}
+function persistLocal(){try{localStorage.setItem(LS,JSON.stringify({tab:ui.tab,unit:ui.unit,youth:ui.youth}))}catch(e){}}
 function rebuild(){
-  state.members=raw.members.map(function(m){return{id:m.id,name:m.name,units:Array.isArray(m.units)?m.units.slice():['mladina'],spec:m.spec||'',driver:!!m.driver,trainee:!!m.trainee}});
+  state.members=raw.members.map(function(m){return{id:m.id,name:m.name,units:Array.isArray(m.units)?m.units.slice():['mladina'],spec:m.spec||'',driver:!!m.driver,trainee:!!m.trainee,youth:m.youth||''}});
   state.mentors=raw.mentors.slice();
   state.events=raw.events.map(function(e){
     return{id:e.id,unit:e.unit||'mladina',type:e.type||'vaja',date:e.date,title:e.title||e.topic||e.name||'',location:e.location||'',time:e.time||'',
       duration:+e.duration||0,place:e.place||'',mentors:(e.mentors||[]).slice(),present:(e.present||[]).slice(),note:e.note||'',
-      vodja:e.vodja||'',izpolnil:e.izpolnil||'',drivers:Object.assign({},e.drivers||{}),others:Object.assign({},e.others||{})};
+      group:e.group||'',vodja:e.vodja||'',izpolnil:e.izpolnil||'',drivers:Object.assign({},e.drivers||{}),others:Object.assign({},e.others||{})};
   });
 }
 function tagsOf(kind){return raw.tags.filter(function(t){return t.kind===kind}).sort(function(a,b){return(a.t||0)-(b.t||0)})}
-function membersOf(unit){return state.members.filter(function(m){return unit==='vse'||m.units.indexOf(unit)>=0}).sort(byName)}
-function eventsOf(unit){return state.events.filter(function(e){return unit==='vse'||e.unit===unit})}
+function membersOf(unit,grp,strict){return state.members.filter(function(m){if(!(unit==='vse'||m.units.indexOf(unit)>=0))return false;if(unit==='mladina'&&grp&&grp!=='vse')return m.youth===grp||(!strict&&!m.youth);return true}).sort(byName)}
+function eventsOf(unit,grp){return state.events.filter(function(e){if(!(unit==='vse'||e.unit===unit))return false;if(unit==='mladina'&&grp&&grp!=='vse')return!e.group||e.group===grp;return true})}
+function tagList(kind){var l=tagsOf(kind);if(kind==='topic'&&ui.sheet&&ui.sheet.d){var sc=scopeOf(ui.sheet.d.unit);l=l.filter(function(t){return(t.scope||'mladina')===sc})}return l}
+
+/* ---------- tema (svetlo / temno) ---------- */
+var THK='pgd-begunje-theme';
+function curTheme(){var t=null;try{t=localStorage.getItem(THK)}catch(e){}if(t)return t;try{return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){return'light'}}
+function applyTheme(){var t=curTheme();document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='dark'?'#0e0e11':'#a8261f')}
+function setTheme(t){try{localStorage.setItem(THK,t)}catch(e){}applyTheme()}
+applyTheme();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){applyTheme();render()})}catch(e){}
 
 /* ---------- strežnik ---------- */
 function api(fn){
@@ -328,13 +391,13 @@ function rowFor(col,o){
 }
 function putDoc(col,obj){var o=JSON.parse(JSON.stringify(obj));write(function(){return api('put',pin,col,o,rowFor(col,o))})}
 function delDoc(col,id){write(function(){return api('del',pin,col,id)})}
-function addTag(kind,v){v=(v||'').trim();if(!v)return'';var f=tagsOf(kind).find(function(x){return x.value.toLowerCase()===v.toLowerCase()});if(f)return f.value;
-  var t={id:uid(),kind:kind,value:v,t:Date.now()};raw.tags.push(t);putDoc('tags',t);return v}
-function addMember(name,unit){
+function addTag(kind,v,extra){v=(v||'').trim();if(!v)return'';var f=tagsOf(kind).find(function(x){return x.value.toLowerCase()===v.toLowerCase()&&(!extra||!extra.scope||(x.scope||'mladina')===extra.scope)});if(f)return f.value;
+  var t=Object.assign({id:uid(),kind:kind,value:v,t:Date.now()},extra||{});raw.tags.push(t);putDoc('tags',t);return v}
+function addMember(name,unit,youth){
   name=(name||'').trim();if(!name)return null;
   var ex=raw.members.find(function(m){return m.name.toLowerCase()===name.toLowerCase()});
   if(ex){var us=Array.isArray(ex.units)?ex.units:['mladina'];if(unit&&unit!=='vse'&&us.indexOf(unit)<0){ex.units=us.concat(unit);putDoc('members',ex)}rebuild();return ex}
-  var p={id:uid(),name:name,units:unit&&unit!=='vse'?[unit]:[]};raw.members.push(p);putDoc('members',p);rebuild();return p;
+  var p={id:uid(),name:name,units:unit&&unit!=='vse'?[unit]:[]};if(unit==='mladina'&&youth&&youth!=='vse')p.youth=youth;raw.members.push(p);putDoc('members',p);rebuild();return p;
 }
 function addMentor(name){name=(name||'').trim();if(!name)return null;var ex=raw.mentors.find(function(m){return m.name.toLowerCase()===name.toLowerCase()});if(ex)return ex;
   var p={id:uid(),name:name};raw.mentors.push(p);putDoc('mentors',p);rebuild();return p}
@@ -369,6 +432,7 @@ function dateBox(e){var d=dObj(e.date),c=T(e.type).color;return'<div class="date
 function evSub(e){
   var t=T(e.type),p=[];
   if(ui.unit==='vse')p.push(U(e.unit).label);
+  if(e.unit==='mladina'&&e.group){var yg=YG.find(function(x){return x.id===e.group});if(yg)p.push(yg.short)}
   p.push(t.label);
   if(e.time)p.push(e.time);
   if(e.location)p.push(e.location);
@@ -388,14 +452,15 @@ function render(){
   var keep={},act=document.activeElement,actId=act&&act.id;
   ['chipIn','search','mval','quickMem'].forEach(function(id){var el=document.getElementById(id);if(el)keep[id]=el.value});
   document.querySelectorAll('form[data-form] input').forEach(function(el){keep['f:'+el.form.dataset.form]=el.value});
-  var titles={dogodki:'Dogodki',porocilo:'Poročilo',clani:'Člani'};
-  var h='<div class="top"><div class="brand"><img class="logo" src="'+LOGO+'" alt=""><div><b>PGD Begunje</b><small>na Gorenjskem</small></div><span class="save" id="save">'+esc(saveMsg)+'</span></div><h1>'+titles[ui.tab]+'</h1>'+
-    '<div class="units">'+UNITS.concat([{id:'vse',label:'Celo društvo'}]).map(function(u){return'<button class="unit'+(ui.unit===u.id?' on':'')+'" data-unit="'+u.id+'">'+esc(u.label)+'</button>'}).join('')+'</div></div><main>';
+  var titles={dogodki:'Dogodki',teme:'Teme',porocilo:'Poročilo',clani:'Člani'};
+  var h='<div class="top"><div class="brand"><img class="logo" src="'+LOGO+'" alt=""><div><b>PGD Begunje</b><small>na Gorenjskem</small></div><span class="save" id="save">'+esc(saveMsg)+'</span><button class="themebtn" data-a="theme" aria-label="Svetlo / temno">'+(curTheme()==='dark'?I.sun:I.moon)+'</button></div><h1>'+titles[ui.tab]+'</h1>'+
+    (ui.tab==='teme'?'':'<div class="units">'+UNITS.concat([ALLU]).map(function(u){return'<button class="unit'+(ui.unit===u.id?' on':'')+'" data-unit="'+u.id+'">'+esc(u.label)+'</button>'}).join('')+'</div>'+
+    (ui.unit==='mladina'?'<div class="subs">'+[{id:'vse',short:'Vsi'}].concat(YG).map(function(g){return'<button class="sub'+(ui.youth===g.id?' on':'')+'" data-youth="'+g.id+'">'+esc(g.id==='vse'?'Vsi':g.label)+'</button>'}).join('')+'</div>':''))+'</div><main>';
   if(offline)h+='<div class="banner">Ni povezave s strežnikom. Prikazani so zadnji naloženi podatki.</div>';
-  if(ui.tab==='dogodki')h+=eventsView();else if(ui.tab==='porocilo')h+=reportView();else h+=listsView();
+  if(ui.tab==='dogodki')h+=eventsView();else if(ui.tab==='teme')h+=temeView();else if(ui.tab==='porocilo')h+=reportView();else h+=listsView();
   h+='</main>';
   if(ui.tab==='dogodki')h+='<button class="fab" data-a="new">'+I.plus+'Nov dogodek</button>';
-  h+='<nav class="tabs">'+[['dogodki','Dogodki',I.cal],['porocilo','Poročilo',I.doc],['clani','Člani',I.ppl]].map(function(t){return'<button data-tab="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[2]+t[1]+'</button>'}).join('')+'</nav>';
+  h+='<nav class="tabs">'+[['dogodki','Dogodki',I.cal],['teme','Teme',I.tag],['porocilo','Poročilo',I.doc],['clani','Člani',I.ppl]].map(function(t){return'<button data-tab="'+t[0]+'" class="'+(ui.tab===t[0]?'on':'')+'">'+t[2]+t[1]+'</button>'}).join('')+'</nav>';
   if(ui.sheet)h+=sheetView();
   if(ui.modal)h+=ui.modal.html;
   if(needPin)h=pinView();
@@ -410,7 +475,7 @@ function render(){
 }
 
 function eventsView(){
-  var all=eventsOf(ui.unit),types=TYPES.filter(function(t){return all.some(function(e){return e.type===t.id})});
+  var all=eventsOf(ui.unit,ui.youth),types=TYPES.filter(function(t){return all.some(function(e){return e.type===t.id})});
   if(ui.filter!=='vse'&&!types.some(function(t){return t.id===ui.filter}))ui.filter='vse';
   var ev=all.filter(function(e){return ui.filter==='vse'||e.type===ui.filter}).sort(function(a,b){return b.date.localeCompare(a.date)||(b.time||'').localeCompare(a.time||'')});
   var h='';
@@ -423,7 +488,7 @@ function eventsView(){
 
 function chipGroup(kind,selected,addLabel){
   var h='<div class="chips">';
-  tagsOf(kind).forEach(function(t,i){h+='<button class="chip'+(selected===t.value?' on':'')+'" data-pick="'+kind+'" data-i="'+i+'">'+esc(t.value)+'</button>'});
+  tagList(kind).forEach(function(t,i){h+='<button class="chip'+(selected===t.value?' on':'')+'" data-pick="'+kind+'" data-i="'+i+'">'+esc(t.value)+'</button>'});
   h+='<button class="chip add" data-addchip="'+kind+'">+ '+addLabel+'</button></div>';
   if(ui.sheet.adding===kind)h+='<div class="addrow"><input class="field" id="chipIn" placeholder="'+esc(addLabel)+'" autocomplete="off"><button class="btn pri" data-a="chipOk">Dodaj</button></div>';
   return h;
@@ -432,13 +497,14 @@ function anim(){if(ui.sheet&&!ui.sheet.shown){ui.sheet.shown=1;return' anim'}ret
 function typePicker(){
   return'<div class="sheet'+anim()+'"><div class="sh-top"><button data-a="cancel">Prekliči</button><b>Nov dogodek</b><span style="width:70px"></span></div><div class="sh-body">'+
     '<div class="lbl">Enota</div><div class="chips">'+UNITS.concat([ALLU]).map(function(u){return'<button class="chip'+(ui.sheet.unit===u.id?' on':'')+'" data-punit="'+u.id+'">'+esc(u.label)+'</button>'}).join('')+'</div>'+
-    '<div class="lbl">Vrsta dogodka</div><div class="types">'+TYPES.map(function(t){return'<button class="type" data-newtype="'+t.id+'"><i style="background:'+t.color+'"></i>'+esc(t.label)+'</button>'}).join('')+'</div></div></div>';
+    '<div class="lbl">Vrsta dogodka</div><div class="types">'+TYPES.filter(function(t){return typesFor(ui.sheet.unit).indexOf(t.id)>=0}).map(function(t){return'<button class="type" data-newtype="'+t.id+'"><i style="background:'+t.color+'"></i>'+esc(t.label)+'</button>'}).join('')+'</div></div></div>';
 }
 function sheetView(){
   if(ui.sheet.pick)return typePicker();
   var d=ui.sheet.d,t=T(d.type),h='';
   h+='<div class="sheet'+anim()+'"><div class="sh-top"><button data-a="cancel">Prekliči</button><b>'+(ui.sheet.isNew?esc(t.label):'Uredi: '+esc(t.label.toLowerCase()))+'</b><button class="done" data-a="saveEv">Shrani</button></div><div class="sh-body">';
-  h+='<div class="lbl">Enota</div><div class="chips">'+UNITS.concat([ALLU]).map(function(u){return'<button class="chip'+(d.unit===u.id?' on':'')+'" data-eunit="'+u.id+'">'+esc(u.label)+'</button>'}).join('')+'</div>';
+  h+='<div class="lbl">Enota</div><div class="chips">'+UNITS.concat([ALLU]).filter(function(u){return u.id===d.unit||typesFor(u.id).indexOf(d.type)>=0}).map(function(u){return'<button class="chip'+(d.unit===u.id?' on':'')+'" data-eunit="'+u.id+'">'+esc(u.label)+'</button>'}).join('')+'</div>';
+  if(d.unit==='mladina')h+='<div class="lbl">Skupina</div><div class="chips">'+YG.concat([{id:'',label:'Oboji'}]).map(function(g){return'<button class="chip'+(d.group===g.id?' on':'')+'" data-egrp="'+g.id+'">'+esc(g.label)+'</button>'}).join('')+'</div>';
   var hasT=t.f.indexOf('time')>=0,td=today();
   h+='<div class="lbl">Datum</div><label class="dbtn"><span><b>'+esc(longDate(d.date))+'</b>'+(d.date===td?'<small>danes</small>':'')+'</span>'+I.cal+'<input type="date" id="fDate" value="'+d.date+'"></label>';
   h+='<div class="chips" style="margin-top:8px">'+[['Danes',0],['Včeraj',-1],['Predvčerajšnjim',-2]].map(function(x){var v=addDays(td,x[1]);return'<button class="chip'+(d.date===v?' on':'')+'" data-dday="'+v+'">'+x[0]+'</button>'}).join('')+'</div>';
@@ -481,7 +547,7 @@ function sheetView(){
     h+='<div class="chips" style="margin-top:8px"><button class="chip add" data-addchip="drustvo">+ Novo društvo</button></div>';
     if(ui.sheet.adding==='drustvo')h+='<div class="addrow"><input class="field" id="chipIn" placeholder="Ime društva" autocomplete="off"><button class="btn pri" data-a="chipOk">Dodaj</button></div>';
   }
-  var mem=ui.showAll?membersOf('vse'):membersOf(d.unit);
+  var mem=ui.showAll?membersOf('vse'):membersOf(d.unit,d.group);
   d.present.forEach(function(id){if(!mem.some(function(m){return m.id===id})){var x=state.members.find(function(m){return m.id===id});if(x)mem.push(x)}});
   mem.sort(byName);
   var on=mem.filter(function(m){return d.present.indexOf(m.id)>=0}).length;
@@ -502,12 +568,12 @@ function sheetView(){
 function periodKey(){return ui.period==='leto'?ui.month.slice(0,4):ui.month}
 function periodTitle(){return ui.period==='leto'?'Leto '+ui.month.slice(0,4):monthName(ui.month)}
 function periodData(){
-  var key=periodKey(),unit=ui.unit;
-  var ev=eventsOf(unit).filter(function(e){return e.date.slice(0,key.length)===key}).sort(function(a,b){return a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||'')});
+  var key=periodKey(),unit=ui.unit,yg=unit==='mladina'?ui.youth:'vse';
+  var ev=eventsOf(unit,yg).filter(function(e){return e.date.slice(0,key.length)===key}).sort(function(a,b){return a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||'')});
   var byType=TYPES.map(function(t){return{t:t,ev:ev.filter(function(e){return e.type===t.id})}}).filter(function(x){return x.ev.length});
   var mins=ev.reduce(function(s,e){return s+(+e.duration||0)},0);
   var people={};ev.forEach(function(e){e.present.forEach(function(id){people[id]=1})});
-  var members=membersOf(unit).map(function(m){
+  var members=membersOf(unit,yg,true).map(function(m){
     var mine=ev.filter(function(e){return unit!=='vse'||m.units.indexOf(e.unit)>=0||e.present.indexOf(m.id)>=0});
     var att=ev.filter(function(e){return e.present.indexOf(m.id)>=0});
     var per={};att.forEach(function(e){per[e.type]=(per[e.type]||0)+1});
@@ -515,7 +581,7 @@ function periodData(){
       mins:att.reduce(function(s,e){return s+(+e.duration||0)},0)};
   });
   var avg=ev.length?Math.round(ev.reduce(function(s,e){return s+presentCount(e)},0)/ev.length*10)/10:0;
-  return{key:key,title:periodTitle(),unit:unit,unitLabel:unit==='vse'?'Celo društvo':U(unit).label,ev:ev,byType:byType,mins:mins,avg:avg,people:Object.keys(people).length,members:members};
+  return{key:key,title:periodTitle(),unit:unit,unitLabel:(unit==='vse'?'Celo društvo':U(unit).label)+(yg!=='vse'?' – '+YGl(yg):''),yg:yg,ev:ev,byType:byType,mins:mins,avg:avg,people:Object.keys(people).length,members:members};
 }
 function shiftMonth(m,k){var p=m.split('-'),d=new Date(+p[0],+p[1]-1+k,1);return d.getFullYear()+'-'+pad(d.getMonth()+1)}
 function reportView(){
@@ -553,7 +619,7 @@ function cols(type,showUnit){
   var M=[];if((ui.unit==='mladina'||ui.unit==='vse')&&(type==='vaja'||type==='tekma'))M.push({k:'Mentorji',w:80,v:function(e){return leaderNames(e)||'–'}});
   return out.concat(c,M,[P]);
 }
-function fileBase(r){return'PGD-Begunje-'+(r.unit==='vse'?'drustvo':r.unit)+'-'+r.key}
+function fileBase(r){return'PGD-Begunje-'+(r.unit==='vse'?'drustvo':r.unit==='clanice'?'upravni-odbor':r.unit)+(r.yg&&r.yg!=='vse'?'-'+r.yg:'')+'-'+r.key}
 function shortPer(per){return TYPES.filter(function(t){return per[t.id]}).map(function(t){return t.plural+' '+per[t.id]}).join(', ')}
 function makePdf(r){
   var red='#a8261f',hdr=function(cs){return cs.map(function(c){return{text:c.k,bold:true,color:'#fff',fillColor:red}})};
@@ -616,15 +682,16 @@ function getFile(){
 }
 
 /* ---------- člani in seznami ---------- */
-var LISTS=[['topic','Teme vaj'],['name','Tekmovanja'],['interv','Vrste intervencij'],['course','Izobraževanja'],['meeting','Vrste sestankov'],['action','Akcije in prireditve'],['location','Lokacije'],['vehicle','Vozila'],['drustvo','Druga društva']];
+var LISTS=[['name','Tekmovanja'],['interv','Vrste intervencij'],['course','Izobraževanja'],['meeting','Vrste sestankov'],['action','Akcije in prireditve'],['location','Lokacije'],['vehicle','Vozila'],['drustvo','Druga društva']];
 function listsView(){
   if(ui.listTab==='mentors'&&ui.unit!=='mladina')ui.listTab='members';
   var lt=ui.listTab,h='<div class="seg">'+[['members','Člani']].concat(ui.unit==='mladina'?[['mentors','Mentorji']]:[],[['lists','Seznami']]).map(function(t){return'<button data-lt="'+t[0]+'" class="'+(lt===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>';
   if(lt==='members'){
-    var arr=membersOf(ui.unit);
+    var arr=membersOf(ui.unit,ui.unit==='mladina'?ui.youth:'vse',true);
     h+='<form class="addrow" data-form="members" style="margin:14px 0"><input class="field" name="v" placeholder="Ime in priimek'+(ui.unit==='vse'?'':' – '+esc(U(ui.unit).label))+'" autocomplete="off"><button class="btn pri">Dodaj</button></form>';
     h+='<button class="btn block" data-a="bulk" style="margin-bottom:14px">Dodaj več naenkrat</button>';
-    h+=arr.length?'<div class="note" style="margin-bottom:8px">'+arr.length+' članov'+(ui.unit==='vse'?' v društvu':' v enoti '+esc(U(ui.unit).label))+'. Tapni člana za enote, preimenovanje ali odstranitev.</div><div class="card">'+arr.map(function(m){return'<button class="li mem" data-mem="'+m.id+'"><span class="nm">'+esc(m.name)+'</span><small class="uns">'+(m.driver?'🚒 ':'')+(m.units.length?m.units.map(function(u){return esc(U(u).label)}).join(', '):'Društvo')+'</small></button>'}).join('')+'</div>':'<div class="empty">V tej enoti še ni članov.</div>';
+    if(ui.unit==='mladina'&&ui.youth==='vse'){var ng=arr.filter(function(m){return!m.youth}).length;if(ng)h+='<div class="banner">'+ng+' članov mladine še nima skupine. Tapni člana in izberi Pionirji ali Mladinci.</div>'}
+    h+=arr.length?'<div class="note" style="margin-bottom:8px">'+arr.length+' članov'+(ui.unit==='vse'?' v društvu':' – '+esc(U(ui.unit).label)+(ui.unit==='mladina'&&ui.youth!=='vse'?', '+esc(YGl(ui.youth).toLowerCase()):''))+'. Tapni člana za enote, preimenovanje ali odstranitev.</div><div class="card">'+arr.map(function(m){return'<button class="li mem" data-mem="'+m.id+'"><span class="nm">'+esc(m.name)+'</span><small class="uns">'+(m.driver?'🚒 ':'')+(m.units.length?m.units.map(function(u){return esc(U(u).label)+(u==='mladina'&&m.youth?' ('+esc(YG.find(function(g){return g.id===m.youth}).short.toLowerCase())+')':'')}).join(', '):'Društvo')+'</small></button>'}).join('')+'</div>':'<div class="empty">V tej enoti še ni članov.</div>';
   }else if(lt==='mentors'){
     var ms=state.mentors.slice().sort(byName);
     h+='<form class="addrow" data-form="mentors" style="margin:14px 0"><input class="field" name="v" placeholder="Ime in priimek" autocomplete="off"><button class="btn pri">Dodaj</button></form>';
@@ -636,10 +703,21 @@ function listsView(){
   }
   return h;
 }
+function temeScope(){return ui.temeScope||scopeOf(ui.unit)}
+function temeView(){
+  var sc=temeScope(),h='<div class="seg">'+SCOPES.map(function(x){return'<button data-scope="'+x.id+'" class="'+(sc===x.id?'on':'')+'">'+x.label+'</button>'}).join('')+'</div>';
+  var list=tagsOf('topic').filter(function(t){return(t.scope||'mladina')===sc});
+  var used={};state.events.forEach(function(e){if(e.type==='vaja'&&scopeOf(e.unit)===sc&&e.title)used[e.title]=(used[e.title]||0)+1});
+  h+='<form class="addrow" data-form="tema" style="margin:14px 0"><input class="field" name="v" placeholder="Nova tema – '+esc(SCOPES.find(function(x){return x.id===sc}).label)+'" autocomplete="off"><button class="btn pri">Dodaj</button></form>';
+  h+=list.length?'<div class="card">'+list.map(function(t){return'<div class="li"><span class="nm">'+esc(t.value)+(used[t.value]?' <small class="used">'+used[t.value]+'× vaja</small>':'')+'</span><button class="ico" data-tren="'+t.id+'">'+I.edit+'</button><button class="ico del" data-tdel="'+t.id+'">'+I.trash+'</button></div>'}).join('')+'</div>':'<div class="empty">'+I.tag+'<div>Še ni tem za to enoto.</div></div>';
+  h+='<div class="note">Teme so ločene: pri vaji mladine se pokažejo teme mladine, pri operativi teme operative, pri ostalih enotah teme »Ostalo«.</div>';
+  return h;
+}
 function memberModal(id){
   var m=raw.members.find(function(x){return x.id===id});if(!m)return;var us=Array.isArray(m.units)?m.units:['mladina'];
   ui.modal={mem:id,html:'<div class="modal" data-a="mclose"><form class="box" data-form="memEdit"><h3>Član</h3><input class="field" id="mval" value="'+esc(m.name)+'" autocomplete="off"><div class="lbl">Enote</div><div class="chips">'+
     UNITS.map(function(u){return'<button type="button" class="chip'+(us.indexOf(u.id)>=0?' on':'')+'" data-munit="'+u.id+'">'+esc(u.label)+'</button>'}).join('')+'</div>'+
+    '<div class="lbl">Skupina v mladini</div><div class="chips">'+YG.map(function(g){return'<button type="button" class="chip'+(m.youth===g.id?' on':'')+'" data-myouth="'+g.id+'">'+esc(g.label)+'</button>'}).join('')+'</div>'+
     '<div class="lbl">Specialnosti</div><input class="field" id="mspec" placeholder="npr. IDA/HTFA/NS/TR" value="'+esc(m.spec||'')+'" autocomplete="off">'+
     '<div class="chips" style="margin-top:12px"><button type="button" class="chip'+(m.driver?' on':'')+'" data-mflag="driver">Voznik</button><button type="button" class="chip'+(m.trainee?' on':'')+'" data-mflag="trainee">Pripravnik</button></div>'+
     '<div class="acts"><button type="button" class="btn" data-a="memDel" style="color:var(--red)">Odstrani</button><button class="btn pri">Shrani</button></div></form></div>'};
@@ -665,7 +743,7 @@ function pinView(){
 function openSheet(e,isNew){ui.showAll=false;ui.sheet={d:JSON.parse(JSON.stringify(e)),isNew:isNew,adding:null,customDur:false};render();var b=document.querySelector('.sh-body');if(b)b.scrollTop=0}
 function newEvent(type,unit){
   var last=state.events.filter(function(e){return e.type===type&&e.unit===unit}).sort(function(a,b){return b.date.localeCompare(a.date)})[0];
-  openSheet({id:uid(),unit:unit,type:type,date:today(),title:'',location:'',time:type==='interv'?nowHM():'',duration:last?last.duration:(type==='vaja'?90:0),place:'',mentors:last&&type==='vaja'?last.mentors.slice():[],present:[],note:'',vodja:'',izpolnil:'',drivers:{},others:{}},true);
+  openSheet({id:uid(),unit:unit,type:type,date:today(),title:'',location:'',time:type==='interv'?nowHM():'',duration:last?last.duration:(type==='vaja'?90:0),place:'',mentors:last&&type==='vaja'?last.mentors.slice():[],present:[],note:'',group:unit==='mladina'&&ui.youth!=='vse'?ui.youth:'',vodja:'',izpolnil:'',drivers:{},others:{}},true);
 }
 function readFields(){
   if(!ui.sheet||ui.sheet.pick)return;
@@ -684,7 +762,7 @@ function saveEvent(){
   if(ui.sheet.adding){var v=(document.getElementById('chipIn')||{}).value;if(v&&v.trim())addChip(v.trim())}
   if(!d.date){toast('Izberi datum');return}
   if(d.location)d.location=addTag('location',d.location);
-  var o={id:d.id,unit:d.unit,type:d.type,date:d.date,title:d.title,location:d.location,time:d.time,duration:d.duration,place:d.place,mentors:d.unit==='mladina'?d.mentors:[],present:d.present,note:d.note,vodja:d.vodja,izpolnil:d.izpolnil,drivers:d.drivers,others:d.others};
+  var o={id:d.id,unit:d.unit,type:d.type,date:d.date,title:d.title,location:d.location,time:d.time,duration:d.duration,place:d.place,mentors:d.unit==='mladina'?d.mentors:[],present:d.present,note:d.note,group:d.unit==='mladina'?d.group:'',vodja:d.vodja,izpolnil:d.izpolnil,drivers:d.drivers,others:d.others};
   var i=raw.events.findIndex(function(e){return e.id===d.id});
   if(i>=0)raw.events[i]=o;else raw.events.push(o);
   rebuild();putDoc('events',o);ui.sheet=null;render();toast('Shranjeno');
@@ -694,6 +772,7 @@ function addChip(v){
   if(k==='mentor'){var ex=addMentor(v);if(ex&&d.mentors.indexOf(ex.id)<0)d.mentors.push(ex.id)}
   else if(k==='location')d.location=addTag('location',v);
   else if(k==='vehicle'||k==='drustvo')addTag(k,v);
+  else if(k==='topic')d.title=addTag(k,v,{scope:scopeOf(d.unit)});
   else d.title=addTag(k,v);
   s.adding=null;
 }
@@ -768,18 +847,21 @@ function updCount(){
 
 /* ---------- dogodki DOM ---------- */
 document.addEventListener('click',function(e){
-  var t=e.target.closest('[data-a],[data-tab],[data-unit],[data-filter],[data-edit],[data-pick],[data-addchip],[data-dur],[data-role],[data-pickp],[data-dday],[data-tadj],[data-loc],[data-mentor],[data-p],[data-month],[data-period],[data-dl],[data-lt],[data-mem],[data-munit],[data-mflag],[data-mren],[data-mdel],[data-tren],[data-tdel],[data-newtype],[data-punit],[data-eunit]');
+  var t=e.target.closest('[data-a],[data-tab],[data-unit],[data-youth],[data-egrp],[data-scope],[data-filter],[data-edit],[data-pick],[data-addchip],[data-dur],[data-role],[data-pickp],[data-dday],[data-tadj],[data-loc],[data-mentor],[data-p],[data-month],[data-period],[data-dl],[data-lt],[data-mem],[data-munit],[data-mflag],[data-myouth],[data-mren],[data-mdel],[data-tren],[data-tdel],[data-newtype],[data-punit],[data-eunit]');
   if(!t)return;var ds=t.dataset,s=ui.sheet;
   if(ds.a==='mclose'&&e.target!==t&&t.classList.contains('modal'))return;
   if(s&&ds.a!=='cancel'&&!ds.p)readFields();
   if(ds.tab){ui.tab=ds.tab;persistLocal();render();window.scrollTo(0,0);return}
   if(ds.unit){ui.unit=ds.unit;ui.filter='vse';persistLocal();render();return}
+  if(ds.youth){ui.youth=ds.youth;persistLocal();render();return}
+  if(ds.egrp!==undefined){s.d.group=ds.egrp;render();return}
+  if(ds.scope){ui.temeScope=ds.scope;render();return}
   if(ds.filter){ui.filter=ds.filter;render();return}
   if(ds.edit){var ev=state.events.find(function(x){return x.id===ds.edit});if(ev)openSheet(ev,false);return}
   if(ds.punit){s.unit=ds.punit;render();return}
   if(ds.newtype){newEvent(ds.newtype,s.unit);ui.sheet.shown=1;render();return}
   if(ds.eunit){s.d.unit=ds.eunit;render();return}
-  if(ds.pick){var tg=tagsOf(ds.pick)[+ds.i];if(!tg)return;var key=ds.pick==='location'?'location':'title';s.d[key]=s.d[key]===tg.value?'':tg.value;render();return}
+  if(ds.pick){var tg=tagList(ds.pick)[+ds.i];if(!tg)return;var key=ds.pick==='location'?'location':'title';s.d[key]=s.d[key]===tg.value?'':tg.value;render();return}
   if(ds.addchip){s.adding=s.adding===ds.addchip?null:ds.addchip;render();var ci=document.getElementById('chipIn');if(ci)ci.focus();return}
   if(ds.role){openPicker(ds.role);return}
   if(ds.pickp!==undefined&&ui.modal&&ui.modal.picker){var rl=ui.modal.picker;setRole(s.d,rl,ds.pickp);if(ds.pickp&&s.d.present.indexOf(ds.pickp)<0)s.d.present.push(ds.pickp);ui.modal=null;render();return}
@@ -795,6 +877,7 @@ document.addEventListener('click',function(e){
   if(ds.lt){ui.listTab=ds.lt;render();return}
   if(ds.mem){memberModal(ds.mem);return}
   if(ds.munit||ds.mflag){t.classList.toggle('on');return}
+  if(ds.myouth){var was=t.classList.contains('on');document.querySelectorAll('[data-myouth]').forEach(function(b){b.classList.remove('on')});if(!was){t.classList.add('on');var mb=document.querySelector('[data-munit=mladina]');if(mb)mb.classList.add('on')}return}
   if(ds.mren){var mn=raw.mentors.find(function(x){return x.id===ds.mren});if(mn)ask('Preimenuj','Ime in priimek',mn.name,function(v){mn.name=v;putDoc('mentors',mn);rebuild()});return}
   if(ds.mdel){var md=raw.mentors.find(function(x){return x.id===ds.mdel});if(md)confirmBox('Odstranim »'+md.name+'« s seznama mentorjev? Pri preteklih dogodkih bo izbrisan.',function(){
     raw.mentors=raw.mentors.filter(function(x){return x.id!==md.id});delDoc('mentors',md.id);
@@ -808,6 +891,7 @@ document.addEventListener('click',function(e){
     case'saveEv':saveEvent();break;
     case'delEv':var id=s.d.id;confirmBox('Dogodek bo trajno izbrisan.',function(){raw.events=raw.events.filter(function(x){return x.id!==id});delDoc('events',id);rebuild();ui.sheet=null});break;
     case'chipOk':var ci2=document.getElementById('chipIn');if(ci2&&ci2.value.trim()){addChip(ci2.value.trim());render()}break;
+    case'theme':setTheme(curTheme()==='dark'?'light':'dark');render();break;
     case'now':s.d.time=nowHM();render();break;
     case'clrTime':s.d.time='';render();break;
     case'customDur':s.customDur=!s.customDur;render();if(s.customDur){var dh=document.getElementById('durH');if(dh)dh.focus()}break;
@@ -815,7 +899,7 @@ document.addEventListener('click',function(e){
     case'none':var vis={};document.querySelectorAll('.person').forEach(function(p){vis[p.dataset.p]=1});s.d.present=s.d.present.filter(function(x){return!vis[x]});render();break;
     case'showAll':ui.showAll=!ui.showAll;render();break;
     case'quickMem':var qm=document.getElementById('quickMem');if(qm&&qm.value.trim()){var nm=addMember(qm.value,s.d.unit);if(nm&&s.d.present.indexOf(nm.id)<0)s.d.present.push(nm.id);render()}break;
-    case'bulk':ask('Dodaj več članov'+(ui.unit==='vse'?'':' – '+U(ui.unit).label),'Vsako ime v svojo vrstico','',function(v){v.split(/\n/).forEach(function(n){addMember(n,ui.unit)})},true);break;
+    case'bulk':ask('Dodaj več članov'+(ui.unit==='vse'?'':' – '+U(ui.unit).label+(ui.unit==='mladina'&&ui.youth!=='vse'?' ('+YGl(ui.youth)+')':'')),'Vsako ime v svojo vrstico','',function(v){v.split(/\n/).forEach(function(n){addMember(n,ui.unit,ui.youth)})},true);break;
     case'memDel':var mid=ui.modal.mem,mm=raw.members.find(function(x){return x.id===mid});ui.modal=null;
       confirmBox('Odstranim »'+mm.name+'« iz društva? Izbrisan bo tudi iz prisotnosti na preteklih dogodkih. Če je samo prestopil v drugo enoto, mu raje spremeni enoto.',function(){
         raw.members=raw.members.filter(function(x){return x.id!==mid});delDoc('members',mid);
@@ -832,9 +916,9 @@ document.addEventListener('submit',function(e){
   if(f==='memEdit'){var m=raw.members.find(function(x){return x.id===ui.modal.mem});var nv=document.getElementById('mval').value.trim();
     var us=[].map.call(document.querySelectorAll('[data-munit].on'),function(b){return b.dataset.munit});
     if(!nv){toast('Vpiši ime');return}
-    m.name=nv;m.units=us;m.spec=document.getElementById('mspec').value.trim();m.driver=!!document.querySelector('[data-mflag=driver].on');m.trainee=!!document.querySelector('[data-mflag=trainee].on');putDoc('members',m);rebuild();ui.modal=null;render();return}
+    m.name=nv;m.units=us;m.spec=document.getElementById('mspec').value.trim();m.driver=!!document.querySelector('[data-mflag=driver].on');m.trainee=!!document.querySelector('[data-mflag=trainee].on');var yb=document.querySelector('[data-myouth].on');m.youth=yb?yb.dataset.myouth:'';putDoc('members',m);rebuild();ui.modal=null;render();return}
   var inp=e.target.querySelector('input'),val=inp.value.trim();if(!val)return;
-  if(f==='members')addMember(val,ui.unit);else if(f==='mentors')addMentor(val);
+  if(f==='members')addMember(val,ui.unit,ui.youth);else if(f==='mentors')addMentor(val);else if(f==='tema')addTag('topic',val,{scope:temeScope()});
   inp.value='';render();var ni=document.querySelector('form[data-form="'+f+'"] input');if(ni){ni.value='';ni.focus()}
 });
 document.addEventListener('keydown',function(e){
